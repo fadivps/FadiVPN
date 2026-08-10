@@ -3,15 +3,21 @@ package com.fadi.vpn;
 import android.content.Intent;
 import android.net.VpnService;
 import android.os.IBinder;
+import android.os.ParcelFileDescriptor;
 
 public class FadiVpnService extends VpnService {
 
     private Thread vpnThread;
+    private ParcelFileDescriptor tun;
+    private XrayRunner xray;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         if (vpnThread == null || !vpnThread.isAlive()) {
+
             vpnThread = new Thread(() -> {
+
                 try {
                     Builder builder = new Builder();
 
@@ -23,24 +29,48 @@ public class FadiVpnService extends VpnService {
 
                     builder.setBlocking(false);
 
-                    android.os.ParcelFileDescriptor tun =
-                            builder.establish();
+                    tun = builder.establish();
 
                     if (tun == null) {
                         stopSelf();
                         return;
                     }
 
-                    // إبقاء واجهة VPN فعالة.
+                    xray = new XrayRunner(this);
+
+                    boolean started = xray.start(
+                            getFilesDir().getAbsolutePath() + "/xray.json"
+                    );
+
+                    if (!started) {
+                        stopSelf();
+                        return;
+                    }
+
                     while (!Thread.currentThread().isInterrupted()) {
                         Thread.sleep(1000);
                     }
 
-                    tun.close();
-
                 } catch (Exception e) {
                     e.printStackTrace();
+
+                } finally {
+
+                    if (xray != null) {
+                        xray.stop();
+                        xray = null;
+                    }
+
+                    if (tun != null) {
+                        try {
+                            tun.close();
+                        } catch (Exception ignored) {
+                        }
+
+                        tun = null;
+                    }
                 }
+
             });
 
             vpnThread.start();
@@ -51,9 +81,23 @@ public class FadiVpnService extends VpnService {
 
     @Override
     public void onDestroy() {
+
         if (vpnThread != null) {
             vpnThread.interrupt();
             vpnThread = null;
+        }
+
+        if (xray != null) {
+            xray.stop();
+            xray = null;
+        }
+
+        if (tun != null) {
+            try {
+                tun.close();
+            } catch (Exception ignored) {
+            }
+            tun = null;
         }
 
         super.onDestroy();
