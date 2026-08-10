@@ -14,13 +14,13 @@ public class XrayRunner {
         this.context = context;
     }
 
-    public boolean start(String configPath) {
+    public boolean start() {
         try {
             File binary = new File(context.getFilesDir(), "libxray.so");
+            File config = new File(context.getFilesDir(), "xray.json");
 
-            if (!binary.exists()) {
-                copyBinary(binary);
-            }
+            copyAssetIfNeeded("libxray.so", binary);
+            copyAssetIfNeeded("xray.json", config);
 
             binary.setExecutable(true);
 
@@ -28,7 +28,7 @@ public class XrayRunner {
                     binary.getAbsolutePath(),
                     "run",
                     "-c",
-                    configPath
+                    config.getAbsolutePath()
             );
 
             pb.redirectErrorStream(true);
@@ -49,10 +49,17 @@ public class XrayRunner {
         }
     }
 
-    private void copyBinary(File destination) throws Exception {
-        try (InputStream in = context.getAssets().open("libxray.so");
-             FileOutputStream out = new FileOutputStream(destination)) {
+    private void copyAssetIfNeeded(String assetName, File destination)
+            throws Exception {
 
+        if (destination.exists() && destination.length() > 0) {
+            return;
+        }
+
+        try (
+            InputStream in = context.getAssets().open(assetName);
+            FileOutputStream out = new FileOutputStream(destination)
+        ) {
             byte[] buffer = new byte[8192];
             int count;
 

@@ -38,9 +38,7 @@ public class FadiVpnService extends VpnService {
 
                     xray = new XrayRunner(this);
 
-                    boolean started = xray.start(
-                            getFilesDir().getAbsolutePath() + "/xray.json"
-                    );
+                    boolean started = xray.start();
 
                     if (!started) {
                         stopSelf();

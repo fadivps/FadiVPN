@@ -1,0 +1,36 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "outbounds": [
+    {
+      "protocol": "vmess",
+      "settings": {
+        "vnext": [
+          {
+            "address": "drugshortage.jp",
+            "port": 443,
+            "users": [
+              {
+                "id": "e8ee7cd0-2d6b-4862-9f30-fe75c52e98c5",
+                "alterId": 0,
+                "security": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "us1.vproxyy.online",
+          "fingerprint": "random"
+        },
+        "xhttpSettings": {
+          "path": "/xhttp"
+        }
+      }
+    }
+  ]
+}
