@@ -1,0 +1,7 @@
+package bridge
+
+import "github.com/xtls/xray-core/core"
+
+func Version() string {
+	return core.Version()
+}

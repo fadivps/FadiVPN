@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FadiVPN</string>
+    <string name="title_activity_main">FadiVPN</string>
+    <string name="package_name">com.fadi.vpn</string>
+    <string name="custom_url_scheme">com.fadi.vpn</string>
+</resources>

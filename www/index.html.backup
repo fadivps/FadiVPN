@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fadi VPN</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #07111f;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .header h1 {
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .header p {
+      margin-top: 8px;
+      color: #8fa3ba;
+      font-size: 14px;
+    }
+
+    .server {
+      margin-top: 35px;
+      background: #101f31;
+      border: 1px solid #1d334b;
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .server-title {
+      color: #8fa3ba;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .server-name {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .server-status {
+      margin-top: 6px;
+      color: #6f8298;
+      font-size: 13px;
+    }
+
+    .connect-area {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .connect {
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      border: 8px solid #1b3a59;
+      background: #0d2237;
+      color: white;
+      font-size: 25px;
+      font-weight: bold;
+      box-shadow: 0 0 35px rgba(0,0,0,.35);
+      transition: .2s;
+    }
+
+    .connect:active {
+      transform: scale(.96);
+    }
+
+    .connected {
+      border-color: #1f9d68;
+      background: #123d2d;
+    }
+
+    .status {
+      text-align: center;
+      color: #8fa3ba;
+      font-size: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat {
+      background: #101f31;
+      border: 1px solid #1d334b;
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .stat-label {
+      color: #71859a;
+      font-size: 12px;
+    }
+
+    .stat-value {
+      margin-top: 8px;
+      font-size: 17px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+
+    <header class="header">
+      <h1>Fadi VPN</h1>
+      <p>اتصال آمن وسريع</p>
+    </header>
+
+    <section class="server">
+      <div class="server-title">الخادم</div>
+      <div class="server-name">Fadi Server</div>
+      <div class="server-status">جاهز للاتصال</div>
+    </section>
+
+    <section class="connect-area">
+      <button class="connect" id="connectButton">
+        اتصال
+      </button>
+    </section>
+
+    <div class="status" id="status">
+      غير متصل
+    </div>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-label">التحميل</div>
+        <div class="stat-value" id="download">0 KB/s</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">الرفع</div>
+        <div class="stat-value" id="upload">0 KB/s</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const button = document.getElementById("connectButton");
+    const status = document.getElementById("status");
+    const download = document.getElementById("download");
+    const upload = document.getElementById("upload");
+
+    let connected = false;
+
+    button.addEventListener("click", () => {
+      connected = !connected;
+
+      if (connected) {
+        button.textContent = "متصل";
+        button.classList.add("connected");
+        status.textContent = "متصل";
+      } else {
+        button.textContent = "اتصال";
+        button.classList.remove("connected");
+        status.textContent = "غير متصل";
+        download.textContent = "0 KB/s";
+        upload.textContent = "0 KB/s";
+      }
+    });
+  </script>
+
+</body>
+</html>
