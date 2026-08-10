@@ -1,17 +1,22 @@
 package com.fadi.vpn;
 
 import android.content.Context;
+import android.os.ParcelFileDescriptor;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Map;
 
 public class XrayRunner {
 
     private final Context context;
+    private final ParcelFileDescriptor tun;
     private Process process;
 
-    public XrayRunner(Context context) {
+    public XrayRunner(Context context, ParcelFileDescriptor tun) {
         this.context = context;
+        this.tun = tun;
     }
 
     public boolean start() {
@@ -31,7 +36,11 @@ public class XrayRunner {
                     config.getAbsolutePath()
             );
 
+            Map<String, String> env = pb.environment();
+            env.put("XRAY_TUN_FD", String.valueOf(tun.getFd()));
+
             pb.redirectErrorStream(true);
+
             process = pb.start();
 
             return true;

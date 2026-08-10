@@ -36,7 +36,7 @@ public class FadiVpnService extends VpnService {
                         return;
                     }
 
-                    xray = new XrayRunner(this);
+                    xray = new XrayRunner(this, tun);
 
                     boolean started = xray.start();
 

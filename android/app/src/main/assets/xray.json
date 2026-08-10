@@ -1,7 +1,32 @@
 {
   "log": {
-    "loglevel": "warning"
+    "loglevel": "info"
   },
+  "inbounds": [
+    {
+      "tag": "tun-in",
+      "protocol": "tun",
+      "settings": {
+        "mtu": 1500,
+        "gateway": [
+          "10.8.0.1/24"
+        ],
+        "dns": [
+          "1.1.1.1",
+          "8.8.8.8"
+        ],
+        "autoOutboundsInterface": "auto"
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ]
+      }
+    }
+  ],
   "outbounds": [
     {
       "protocol": "vmess",
