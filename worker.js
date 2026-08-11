@@ -3,6 +3,12 @@ export default {
     const url = new URL(request.url);
 
     if (url.pathname === "/vmess") {
+      if (!env.GITHUB_TOKEN) {
+        return new Response("GITHUB_TOKEN is missing", {
+          status: 500
+        });
+      }
+
       const response = await fetch(
         "https://api.github.com/repos/fadivps/FadiVPN/contents/config/vmess.json?ref=master",
         {
