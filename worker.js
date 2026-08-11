@@ -1,21 +1,24 @@
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     const url = new URL(request.url);
 
     if (url.pathname === "/vmess") {
       const response = await fetch(
-        "https://raw.githubusercontent.com/fadivps/FadiVPN/master/config/vmess.json",
+        "https://api.github.com/repos/fadivps/FadiVPN/contents/config/vmess.json?ref=master",
         {
           headers: {
+            "Authorization": `Bearer ${env.GITHUB_TOKEN}`,
+            "Accept": "application/vnd.github.raw+json",
             "User-Agent": "FadiVPN-Updater"
           }
         }
       );
 
       if (!response.ok) {
-        return new Response("VMess configuration unavailable", {
-          status: 502
-        });
+        return new Response(
+          `GitHub error: ${response.status}`,
+          { status: 502 }
+        );
       }
 
       const data = await response.text();
