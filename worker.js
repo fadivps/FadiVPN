@@ -39,4 +39,12 @@ export default {
 
     return new Response("FadiVPN Updater OK");
   }
+  ,
+
+  async scheduled(event, env, ctx) {
+    console.log(
+      "FadiVPN scheduled trigger executed:",
+      new Date().toISOString()
+    );
+  }
 };
