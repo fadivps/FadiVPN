@@ -130,6 +130,79 @@
       font-weight: bold;
     }
   </style>
+
+<style>
+.creator-card {
+  position: relative;
+  margin: 28px auto 10px;
+  width: min(88%, 360px);
+  padding: 24px 18px 20px;
+  text-align: center;
+  border: 1px solid rgba(80, 180, 255, 0.35);
+  border-radius: 22px;
+  background: linear-gradient(145deg, #101d2d, #0a1421);
+  box-shadow:
+    0 0 25px rgba(30, 150, 255, 0.12),
+    inset 0 0 20px rgba(255, 255, 255, 0.025);
+  overflow: hidden;
+}
+
+.creator-glow {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  left: 50%;
+  top: -75px;
+  transform: translateX(-50%);
+  background: rgba(40, 170, 255, 0.16);
+  filter: blur(35px);
+  border-radius: 50%;
+}
+
+.creator-icon {
+  position: relative;
+  margin: 0 auto 10px;
+  width: 42px;
+  height: 42px;
+  line-height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(90, 190, 255, 0.45);
+  background: rgba(30, 100, 150, 0.15);
+  font-size: 22px;
+}
+
+.creator-title {
+  position: relative;
+  font-size: 14px;
+  color: #b8c7d8;
+  margin-bottom: 9px;
+}
+
+.creator-name {
+  position: relative;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #ffffff;
+  text-shadow: 0 0 14px rgba(80, 190, 255, 0.45);
+}
+
+.creator-line {
+  width: 75px;
+  height: 2px;
+  margin: 14px auto 9px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, transparent, #55baff, transparent);
+}
+
+.creator-subtitle {
+  position: relative;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #6f9fbd;
+}
+</style>
+
 </head>
 
 <body>
@@ -142,7 +215,7 @@
 
     <section class="server">
       <div class="server-title">الخادم</div>
-      <div class="server-name">Fadi Server</div>
+      <div class="server-name">أمنيه الأردن</div>
       <div class="server-status">جاهز للاتصال</div>
     </section>
 
@@ -170,16 +243,13 @@
       word-break:break-all;
     "></div>
 
-    <section class="stats">
-      <div class="stat">
-        <div class="stat-label">التحميل</div>
-        <div class="stat-value" id="download">0 KB/s</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-label">الرفع</div>
-        <div class="stat-value" id="upload">0 KB/s</div>
-      </div>
+    <section class="creator-card">
+      <div class="creator-glow"></div>
+      <div class="creator-icon">✦</div>
+      <div class="creator-title">تم صنع التطبيق بواسطة</div>
+      <div class="creator-name">{ FADI-XD }</div>
+      <div class="creator-line"></div>
+      <div class="creator-subtitle">FadiVPN</div>
     </section>
 
   </main>
@@ -187,8 +257,6 @@
   <script>
     const button = document.getElementById("connectButton");
     const status = document.getElementById("status");
-    const download = document.getElementById("download");
-    const upload = document.getElementById("upload");
     const vlessBox = document.getElementById("vlessBox");
 
     // رابط VLESS تجريبي لاختبار التحويل
@@ -199,11 +267,15 @@
 
     if (convertedVless) {
       vlessBox.textContent = convertedVless;
-      vlessBox.style.display = "block";
+      vlessBox.style.display = "none";
       console.log("VLESS بعد تغيير Address:", convertedVless);
     }
 
     let connected = false;
+    let statsTimer = null;
+    let lastDownload = null;
+    let lastUpload = null;
+    let lastStatsTime = null;
 
     // تحويل Address في رابط VLESS فقط
     function convertVlessAddress(vlessUrl) {
@@ -225,19 +297,49 @@
       }
     }
 
-    button.addEventListener("click", () => {
-      connected = !connected;
+    const FadiVpn = window.Capacitor
+      ? window.Capacitor.Plugins.FadiVpn
+      : null;
 
-      if (connected) {
-        button.textContent = "متصل";
-        button.classList.add("connected");
-        status.textContent = "متصل";
-      } else {
+    button.addEventListener("click", async () => {
+      try {
+        if (!connected) {
+          if (!window.Capacitor) {
+            throw new Error("Capacitor غير موجود داخل التطبيق");
+          }
+
+          if (!window.Capacitor.Plugins) {
+            throw new Error("Capacitor.Plugins غير موجود");
+          }
+
+          if (!FadiVpn) {
+            throw new Error("FadiVpn plugin غير مسجل");
+          }
+
+          status.textContent = "تم العثور على FadiVpn - جارٍ الاتصال...";
+
+          await FadiVpn.connect();
+
+          connected = true;
+          button.textContent = "متصل";
+          button.classList.add("connected");
+          status.textContent = "متصل";
+        } else {
+          if (FadiVpn) {
+            await FadiVpn.disconnect();
+          }
+
+          connected = false;
+          button.textContent = "اتصال";
+          button.classList.remove("connected");
+          status.textContent = "غير متصل";
+        }
+      } catch (error) {
+        console.error("FadiVPN connection error:", error);
+        connected = false;
         button.textContent = "اتصال";
         button.classList.remove("connected");
-        status.textContent = "غير متصل";
-        download.textContent = "0 KB/s";
-        upload.textContent = "0 KB/s";
+        status.textContent = "فشل الاتصال: " + (error && error.message ? error.message : error);
       }
     });
   </script>

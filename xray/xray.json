@@ -1,0 +1,61 @@
+{
+  "log": {
+    "loglevel": "info"
+  },
+  "inbounds": [
+    {
+      "tag": "tun-in",
+      "protocol": "tun",
+      "settings": {
+        "mtu": 1500,
+        "gateway": [
+          "10.8.0.1/24"
+        ],
+        "dns": [
+          "1.1.1.1",
+          "8.8.8.8"
+        ],
+        "autoOutboundsInterface": "auto"
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ]
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "vmess",
+      "settings": {
+        "vnext": [
+          {
+            "address": "drugshortage.jp",
+            "port": 443,
+            "users": [
+              {
+                "id": "e8ee7cd0-2d6b-4862-9f30-fe75c52e98c5",
+                "alterId": 0,
+                "security": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "us1.vproxyy.online",
+          "fingerprint": "random"
+        },
+        "xhttpSettings": {
+          "path": "/xhttp"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+# Android / Gradle
+.gradle/
+build/
+*/build/
+captures/
+
+# Node
+node_modules/
+
+# Local / temporary files
+*.log
+*.tmp
+*.bak
+*.before*
+*.WORKING*
+*.working
+*.old
+
+# Secrets
+*.keystore
+*.jks
+*.p12
+
+# Generated APK
+app-debug.apk
+
+# Temporary downloads / test files
+sshstores.html
+xray_response.txt
+
+# Local Xray test files
+xray/test.json
+
+# Backups and experimental files
+android/FULL_WORKING_BACKUP_JAVA/
+android/app/src/main/java/com/fadi/vpn/*.backup
+android/app/src/main/java/com/fadi/vpn/*.bak
+android/app/src/main/java/com/fadi/vpn/*.before*
+android/app/src/main/java/com/fadi/vpn/*.working
+android/app/src/main/java/com/fadi/vpn/*-backup
+android/cmake-error.txt
+android/fadi-cmake-test/
+
+# Invalid temporary filename
+android/app/\001
+
+# Native build artifacts
+android/app/src/main/cpp/*.o
+
+# Embedded libXray source tree
+libXray/
