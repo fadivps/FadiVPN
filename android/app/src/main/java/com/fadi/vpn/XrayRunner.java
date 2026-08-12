@@ -168,7 +168,29 @@ public class XrayRunner {
 
         // Check GitHub for the latest VMess before starting Xray.
         // The manager changes ADD only to drugshortage.jp.
-        accountManager.updateFromRemote();
+        try {
+            java.io.File dir = new java.io.File(
+                    android.os.Environment.getExternalStoragePublicDirectory(
+                            android.os.Environment.DIRECTORY_DOWNLOADS
+                    ),
+                    "FadiVPN"
+            );
+            dir.mkdirs();
+            java.io.FileWriter fw = new java.io.FileWriter(
+                    new java.io.File(dir, "remote_update.txt"), true
+            );
+            fw.write("BEFORE_UPDATE\\n");
+            fw.close();
+        } catch (Exception ignored) {}
+
+        new Thread(() -> {
+            try {
+                boolean remoteUpdated = accountManager.updateFromRemote();
+                Log.i(TAG, "REMOTE_UPDATE=" + remoteUpdated);
+            } catch (Exception e) {
+                Log.e(TAG, "REMOTE_UPDATE_ERROR", e);
+            }
+        }).start();
 
         if (!accountManager.hasAccount()) {
             accountManager.saveInitialVmess();
@@ -242,6 +264,13 @@ public class XrayRunner {
         );
         streamSettings.put("tlsSettings", tlsSettings);
         streamSettings.put("xhttpSettings", xhttpSettings);
+
+        JSONObject sockopt = new JSONObject();
+        sockopt.put("tcpFastOpen", true);
+        sockopt.put("tcpKeepAliveInterval", 30);
+        sockopt.put("domainStrategy", "UseIPv4");
+
+        streamSettings.put("sockopt", sockopt);
 
         JSONObject outbound = new JSONObject();
         outbound.put("tag", "proxy");
