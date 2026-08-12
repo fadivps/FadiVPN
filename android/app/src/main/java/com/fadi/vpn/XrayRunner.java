@@ -183,17 +183,19 @@ public class XrayRunner {
             fw.close();
         } catch (Exception ignored) {}
 
-        new Thread(() -> {
-            try {
-                boolean remoteUpdated = accountManager.updateFromRemote();
-                Log.i(TAG, "REMOTE_UPDATE=" + remoteUpdated);
-            } catch (Exception e) {
-                Log.e(TAG, "REMOTE_UPDATE_ERROR", e);
-            }
-        }).start();
-
         if (!accountManager.hasAccount()) {
             accountManager.saveInitialVmess();
+        }
+
+        if (accountManager.needsRenewal()) {
+            new Thread(() -> {
+                try {
+                    boolean remoteUpdated = accountManager.updateFromRemote();
+                    Log.i(TAG, "REMOTE_UPDATE=" + remoteUpdated);
+                } catch (Exception e) {
+                    Log.e(TAG, "REMOTE_UPDATE_ERROR", e);
+                }
+            }).start();
         }
 
         String vmessLink = accountManager.getVmess();
