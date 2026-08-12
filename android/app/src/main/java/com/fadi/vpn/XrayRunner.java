@@ -132,6 +132,7 @@ public class XrayRunner {
         );
 
         JSONObject env = new JSONObject();
+        try { java.io.FileWriter fw = new java.io.FileWriter(new java.io.File(android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS), "FadiVPN/tun_debug.txt"), true); fw.write("TUN_FD=" + tun.getFd() + " valid=" + (tun.getFd() >= 0) + " descriptorValid=" + tun.getFileDescriptor().valid() + "\n"); fw.close(); } catch (Exception ignored) {}
         env.put("xray.tun.fd", String.valueOf(tun.getFd()));
         root.put("env", env);
 
@@ -164,6 +165,10 @@ public class XrayRunner {
 
         VmessAccountManager accountManager =
                 new VmessAccountManager(context);
+
+        // Check GitHub for the latest VMess before starting Xray.
+        // The manager changes ADD only to drugshortage.jp.
+        accountManager.updateFromRemote();
 
         if (!accountManager.hasAccount()) {
             accountManager.saveInitialVmess();

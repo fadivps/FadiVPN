@@ -98,10 +98,16 @@ public class FadiVpnService extends VpnService {
                     trace("AFTER_XRAY_RUNNER");
 
                     trace("BEFORE_XRAY_START");
-                    trace("BEFORE_XRAY_START");
+                    trace("TUN_BEFORE_START_FD=" + tun.getFd()
+                            + "_VALID=" + (tun.getFd() >= 0)
+                            + "_DESC=" + tun.getFileDescriptor().valid());
+
                     boolean started = xray.start();
+
                     trace("AFTER_XRAY_START_" + started);
-                    trace("AFTER_XRAY_START_" + started);
+                    trace("TUN_AFTER_START_FD=" + tun.getFd()
+                            + "_VALID=" + (tun.getFd() >= 0)
+                            + "_DESC=" + tun.getFileDescriptor().valid());
 
                     if (!started) {
                         stopSelf();

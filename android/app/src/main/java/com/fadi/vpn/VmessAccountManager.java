@@ -7,6 +7,10 @@ import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class VmessAccountManager {
 
@@ -34,6 +38,82 @@ public class VmessAccountManager {
     public void saveInitialVmess() {
         String link = "vmess://eyJhZGQiOiAidXMzLnZwcm94eXkub25saW5lIiwgImFpZCI6ICIwIiwgImFsbG93SW5zZWN1cmUiOiAxLCAiZXh0cmEiOiB7Im5vR1JQQ0hlYWRlciI6IGZhbHNlLCAic2NNYXhDb25jdXJyZW50UG9zdHMiOiAxMDAsICJzY01heEVhY2hQb3N0Qnl0ZXMiOiAxMDAwMDAwLCAic2NNaW5Qb3N0c0ludGVydmFsTXMiOiAzMCwgInhQYWRkaW5nQnl0ZXMiOiAiMTAwLTEwMDAifSwgImZwIjogInJhbmRvbSIsICJob3N0IjogIiIsICJpZCI6ICI5Yjk1MDg4My1jOTE2LTRiNWUtYmU5My0zOWQ2OTIwMzVlZjgiLCAibmV0IjogInhodHRwIiwgInBhdGgiOiAiL3hodHRwIiwgInBvcnQiOiA0NDMsICJwcyI6ICIoc3Noc3RvcmVzLWRodmpmaCkgLSBbVk1lc3MgLSBYSFRUUCBUTFNdIiwgInNjeSI6ICJhdXRvIiwgInNuaSI6ICJ1czMudnByb3h5eS5vbmxpbmUiLCAidGxzIjogInRscyIsICJ0eXBlIjogImF1dG8iLCAidiI6ICIyIn0=";
         saveVmess(link);
+    }
+
+    public boolean updateFromRemote() {
+        HttpURLConnection connection = null;
+
+        try {
+            URL url = new URL(
+                    "https://raw.githubusercontent.com/fadivps/FadiVPN/master/config/vmess.json"
+            );
+
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(8000);
+            connection.setReadTimeout(8000);
+            connection.setUseCaches(false);
+
+            int code = connection.getResponseCode();
+
+            if (code != HttpURLConnection.HTTP_OK) {
+                return false;
+            }
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(
+                            connection.getInputStream(),
+                            StandardCharsets.UTF_8
+                    )
+            );
+
+            StringBuilder body = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                body.append(line);
+            }
+
+            reader.close();
+
+            JSONObject remote = new JSONObject(body.toString());
+
+            String remoteLink = remote.optString("vmess", null);
+            String remoteUpdated = remote.optString("updated_at", "");
+
+            if (remoteLink == null ||
+                    !remoteLink.startsWith("vmess://")) {
+                return false;
+            }
+
+            String current = getVmess();
+
+            if (current == null ||
+                    !remoteUpdated.equals(
+                            prefs.getString("remote_updated_at", "")
+                    )) {
+
+                String prepared = convertAddress(remoteLink);
+
+                prefs.edit()
+                        .putString(KEY_LINK, prepared)
+                        .putString("remote_updated_at", remoteUpdated)
+                        .putLong(KEY_TIME, System.currentTimeMillis())
+                        .apply();
+
+                return true;
+            }
+
+            return false;
+
+        } catch (Exception e) {
+            return false;
+
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 
     public String getVmess() {
