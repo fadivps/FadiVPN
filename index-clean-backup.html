@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fadi VPN</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #07111f;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 430px;
+      min-height: 100vh;
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .header h1 {
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .header p {
+      margin-top: 8px;
+      color: #8fa3ba;
+      font-size: 14px;
+    }
+
+    .server {
+      margin-top: 35px;
+      background: #101f31;
+      border: 1px solid #1d334b;
+      border-radius: 18px;
+      padding: 18px;
+    }
+
+    .server-title {
+      color: #8fa3ba;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .server-name {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .server-status {
+      margin-top: 6px;
+      color: #6f8298;
+      font-size: 13px;
+    }
+
+    .connect-area {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .connect {
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      border: 8px solid #1b3a59;
+      background: #0d2237;
+      color: white;
+      font-size: 25px;
+      font-weight: bold;
+      box-shadow: 0 0 35px rgba(0,0,0,.35);
+      transition: .2s;
+    }
+
+    .connect:active {
+      transform: scale(.96);
+    }
+
+    .connected {
+      border-color: #1f9d68;
+      background: #123d2d;
+    }
+
+    .status {
+      text-align: center;
+      color: #8fa3ba;
+      font-size: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat {
+      background: #101f31;
+      border: 1px solid #1d334b;
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .stat-label {
+      color: #71859a;
+      font-size: 12px;
+    }
+
+    .stat-value {
+      margin-top: 8px;
+      font-size: 17px;
+      font-weight: bold;
+    }
+  </style>
+
+<style>
+.creator-card {
+  position: relative;
+  margin: 28px auto 10px;
+  width: min(88%, 360px);
+  padding: 24px 18px 20px;
+  text-align: center;
+  border: 1px solid rgba(80, 180, 255, 0.35);
+  border-radius: 22px;
+  background: linear-gradient(145deg, #101d2d, #0a1421);
+  box-shadow:
+    0 0 25px rgba(30, 150, 255, 0.12),
+    inset 0 0 20px rgba(255, 255, 255, 0.025);
+  overflow: hidden;
+}
+
+.creator-glow {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  left: 50%;
+  top: -75px;
+  transform: translateX(-50%);
+  background: rgba(40, 170, 255, 0.16);
+  filter: blur(35px);
+  border-radius: 50%;
+}
+
+.creator-icon {
+  position: relative;
+  margin: 0 auto 10px;
+  width: 42px;
+  height: 42px;
+  line-height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(90, 190, 255, 0.45);
+  background: rgba(30, 100, 150, 0.15);
+  font-size: 22px;
+}
+
+.creator-title {
+  position: relative;
+  font-size: 14px;
+  color: #b8c7d8;
+  margin-bottom: 9px;
+}
+
+.creator-name {
+  position: relative;
+  font-size: 23px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #ffffff;
+  text-shadow: 0 0 14px rgba(80, 190, 255, 0.45);
+}
+
+.creator-line {
+  width: 75px;
+  height: 2px;
+  margin: 14px auto 9px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, transparent, #55baff, transparent);
+}
+
+.creator-subtitle {
+  position: relative;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #6f9fbd;
+}
+</style>
+
+</head>
+
+<body>
+  <main class="app">
+
+    <header class="header">
+      <h1>Fadi VPN</h1>
+      <p>اتصال آمن وسريع</p>
+    </header>
+
+    <section class="server">
+      <div class="server-title">الخادم</div>
+      <div class="server-name">أمنيه الأردن</div>
+      <div class="server-status">جاهز للاتصال</div>
+    </section>
+
+    <section class="connect-area">
+      <button class="connect" id="connectButton">
+        اتصال
+      </button>
+    </section>
+
+    <div class="status" id="status">
+      غير متصل
+    </div>
+
+    <div id="vlessBox" style="
+      display:none;
+      margin-bottom:20px;
+      padding:12px;
+      background:#101f31;
+      border:1px solid #1d334b;
+      border-radius:12px;
+      font-size:11px;
+      line-height:1.6;
+      direction:ltr;
+      text-align:left;
+      word-break:break-all;
+    "></div>
+
+    <section class="creator-card">
+      <div class="creator-glow"></div>
+      <div class="creator-icon">✦</div>
+      <div class="creator-title">تم صنع التطبيق بواسطة</div>
+      <div class="creator-name">{ FADI-XD }</div>
+      <div class="creator-line"></div>
+      <div class="creator-subtitle">FadiVPN</div>
+    </section>
+
+  </main>
+
+  <script>
+    const button = document.getElementById("connectButton");
+    const status = document.getElementById("status");
+    const vlessBox = document.getElementById("vlessBox");
+
+    // رابط VLESS تجريبي لاختبار التحويل
+    const testVless =
+      "vless://7e108516-012a-4c98-b1b7-8400d7449656@us1.vlspeed.xyz:443?security=tls&type=xhttp&headerType=&path=%2Fxhttp&host=&mode=auto&extra=%7B%22scMaxEachPostBytes%22%3A+1000000%2C+%22scMaxConcurrentPosts%22%3A+100%2C+%22scMinPostsIntervalMs%22%3A+30%2C+%22xPaddingBytes%22%3A+%22100-1000%22%2C+%22noGRPCHeader%22%3A+false%7D&sni=us1.vlspeed.xyz&fp=random&allowInsecure=1#FadiVPS";
+
+    const convertedVless = convertVlessAddress(testVless);
+
+    if (convertedVless) {
+      vlessBox.textContent = convertedVless;
+      vlessBox.style.display = "none";
+      console.log("VLESS بعد تغيير Address:", convertedVless);
+    }
+
+    let connected = false;
+    let statsTimer = null;
+    let lastDownload = null;
+    let lastUpload = null;
+    let lastStatsTime = null;
+
+    // تحويل Address في رابط VLESS فقط
+    function convertVlessAddress(vlessUrl) {
+      try {
+        const url = new URL(vlessUrl);
+
+        if (url.protocol !== "vless:") {
+          throw new Error("الرابط ليس VLESS");
+        }
+
+        // تغيير الـ Address فقط
+        url.hostname = "drugshortage.jp";
+
+        // الاحتفاظ بـ sni وبقية الإعدادات كما هي
+        return url.toString();
+      } catch (error) {
+        console.error("VLESS conversion error:", error);
+        return null;
+      }
+    }
+
+    const FadiVpn = window.Capacitor
+      ? window.Capacitor.Plugins.FadiVpn
+      : null;
+
+    button.addEventListener("click", async () => {
+      try {
+        if (!connected) {
+          if (!window.Capacitor) {
+            throw new Error("Capacitor غير موجود داخل التطبيق");
+          }
+
+          if (!window.Capacitor.Plugins) {
+            throw new Error("Capacitor.Plugins غير موجود");
+          }
+
+          if (!FadiVpn) {
+            throw new Error("FadiVpn plugin غير مسجل");
+          }
+
+          status.textContent = "تم العثور على FadiVpn - جارٍ الاتصال...";
+
+          await FadiVpn.connect();
+
+          connected = true;
+          button.textContent = "متصل";
+          button.classList.add("connected");
+          status.textContent = "متصل";
+        } else {
+          if (FadiVpn) {
+            await FadiVpn.disconnect();
+          }
+
+          connected = false;
+          button.textContent = "اتصال";
+          button.classList.remove("connected");
+          status.textContent = "غير متصل";
+        }
+      } catch (error) {
+        console.error("FadiVPN connection error:", error);
+        connected = false;
+        button.textContent = "اتصال";
+        button.classList.remove("connected");
+        status.textContent = "فشل الاتصال: " + (error && error.message ? error.message : error);
+      }
+    });
+  </script>
+
+</body>
+</html>
